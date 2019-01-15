@@ -21,7 +21,7 @@ from traitlets.config.loader import PyFileConfigLoader
 from knrm.model import BaseNN
 
 
-reload(sys)
+sys.reload()
 sys.setdefaultencoding('UTF8')
 
 
@@ -38,13 +38,13 @@ class Knrm(BaseNN):
 
         self.mus = Knrm.kernal_mus(self.n_bins, use_exact=True)
         self.sigmas = Knrm.kernel_sigmas(self.n_bins, self.lamb, use_exact=True)
-        print "kernel sigma values: ", self.sigmas
+        print("kernel sigma values: ", self.sigmas)
 
-        print "trying to load initial embeddings from:  ", self.emb_in
+        print("trying to load initial embeddings from:  ", self.emb_in)
         if self.emb_in != 'None':
             self.emb = self.load_word2vec(self.emb_in)
             self.embeddings = tf.Variable(tf.constant(self.emb, dtype='float32', shape=[self.vocabulary_size + 1, self.embedding_size]))
-            print "Initialized embeddings with {0}".format(self.emb_in)
+            print("Initialized embeddings with {0}".format(self.emb_in))
         else:
             self.embeddings = tf.Variable(tf.random_uniform([self.vocabulary_size + 1, self.embedding_size], -1.0, 1.0))
 
@@ -63,12 +63,12 @@ class Knrm(BaseNN):
                 items = line.split()
                 tid = int(items[0])
                 if tid > self.vocabulary_size:
-                    print tid
+                    print(tid)
                     continue
                 vec = np.array([float(t) for t in items[1:]])
                 emb[tid, :] = vec
                 if nlines % 20000 == 0:
-                    print "load {0} vectors...".format(nlines)
+                    print("load {0} vectors...".format(nlines))
         return emb
 
     def model(self, inputs_q, inputs_d, mask, q_weights, mu, sigma):
@@ -119,11 +119,11 @@ class Knrm(BaseNN):
 
         feats.append(aggregated_kde) # [[batch, nbins]]
         feats_tmp = tf.concat(1, feats)  # [batch, n_bins]
-        print "batch feature shape:", feats_tmp.get_shape()
+        print("batch feature shape:", feats_tmp.get_shape())
 
         # Reshape. (maybe not necessary...)
         feats_flat = tf.reshape(feats_tmp, [-1, self.n_bins])
-        print "flat feature shape:", feats_flat.get_shape()
+        print("flat feature shape:", feats_flat.get_shape())
 
         # Learning-To-Rank layer. o is the final matching score.
         o = tf.tanh(tf.matmul(feats_flat, self.W1) + self.b1)
@@ -132,15 +132,15 @@ class Knrm(BaseNN):
         total_parameters = 0
         for variable in tf.trainable_variables():
             shape = variable.get_shape()
-            #print(shape)
-            #print(len(shape))
+            # print(shape)
+            # print(len(shape))
             variable_parametes = 1
             for dim in shape:
-                #print(dim)
+                # print(dim)
                 variable_parametes *= dim.value
-            #print(variable_parametes)
+            # print(variable_parametes)
             total_parameters += variable_parametes
-        print "total number of parameters:", total_parameters
+        print("total number of parameters:", total_parameters)
 
         # return some mid result and final matching score.
         return (sim, feats_flat), o
@@ -197,7 +197,7 @@ class Knrm(BaseNN):
 
             # Run all the initializers to prepare the trainable parameters.
             if not load_model:
-                print "Initializing a new model..."
+                print("Initializing a new model...")
                 tf.initialize_all_variables().run()
                 print('New model initialized!')
 
@@ -205,9 +205,9 @@ class Knrm(BaseNN):
                 ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
                 if ckpt and ckpt.model_checkpoint_path:
                     saver.restore(sess, ckpt.model_checkpoint_path)
-                    print "model loaded!"
+                    print("model loaded!")
                 else:
-                    print "no data found"
+                    print("no data found")
                     exit(-1)
 
             # Loop through training steps.
@@ -265,7 +265,6 @@ class Knrm(BaseNN):
                         print('validation loss: %.3f' % (val_l))
                         sys.stdout.flush()
 
-
                     # save data
                     if (step + 1) % self.checkpoint_steps == 0:
                         saver.save(sess, checkpoint_dir + '/data.ckpt')
@@ -309,7 +308,6 @@ class Knrm(BaseNN):
         # training graph
         inter_res, o = self.model(test_inputs_q, test_inputs_d, rs_test_mask, rs_q_weights, mu, sigma)
 
-
         # Create a local session to run the testing.
         with tf.Session() as sess:
             test_point_stream = open(test_point_file_path)
@@ -320,9 +318,9 @@ class Knrm(BaseNN):
                 p = checkpoint_dir + 'data.ckpt'
                 if True:
                     saver.restore(sess, p)
-                    print "data loaded!"
+                    print("data loaded!")
                 else:
-                    print "no data found"
+                    print("no data found")
                     exit(-1)
             else:
                 tf.initialize_all_variables().run()  
@@ -343,11 +341,9 @@ class Knrm(BaseNN):
 
                 for score in scores:
                     outfile.write('{0}\n'.format(score[0]))
-
-
-
             outfile.close()
             test_point_stream.close()
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

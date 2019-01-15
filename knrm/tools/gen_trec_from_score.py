@@ -6,7 +6,7 @@
 
 import argparse
 import sys
-reload(sys)
+sys.reload()
 sys.setdefaultencoding('UTF8')
 
 if __name__ == '__main__':

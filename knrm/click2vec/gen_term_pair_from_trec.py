@@ -31,7 +31,7 @@ if __name__ == '__main__':
     for line in args.vocab_file:
         term, tid = line.split('\t')
         vocab.add(term)
-    print "Vocabuloray size: {0}.".format(len(vocab))
+    print("Vocabulary size: {0}.".format(len(vocab)))
 
     prev_qid = -1
     rank = 0

@@ -24,8 +24,8 @@ def pair_docno(v_label, l_qid, l_docno):
     l_paired_qid = []
     l_docno_pair = []
     l_pos_pair = []
-    for p in xrange(len(l_qid)):
-        for q in xrange(p + 1, len(l_qid)):
+    for p in range(len(l_qid)):
+        for q in range(p + 1, len(l_qid)):
             if l_qid[q] != l_qid[p]:
                 break
             if v_label[p] == v_label[q]:
@@ -47,11 +47,11 @@ def fix_kfold_partition(with_dev=False, k=10, st=1, ed=100):
     l_train_folds = []
     l_dev_folds = []
     l_test_folds = []
-    for fold in xrange(k):
+    for fold in range(k):
         test = []
         train = []
         dev = []
-        for qid in xrange(st, ed + 1):
+        for qid in range(st, ed + 1):
             if (qid % k) == fold:
                 test.append("%d" % qid)
                 continue

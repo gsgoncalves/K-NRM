@@ -16,7 +16,7 @@ from traitlets import (
 
 import sys
 
-reload(sys)
+sys.reload()
 sys.setdefaultencoding('UTF8')
 
 
@@ -55,7 +55,7 @@ class BaseNN(Configurable):
 
         bin_size = 2.0 / (n_kernels - 1)  # score range from [-1, 1]
         l_mu.append(1 - bin_size / 2)  # mu: middle of the bin
-        for i in xrange(1, n_kernels - 1):
+        for i in range(1, n_kernels - 1):
             l_mu.append(l_mu[i] - bin_size)
         return l_mu
 

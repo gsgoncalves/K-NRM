@@ -37,7 +37,7 @@ from numpy import genfromtxt
 import logging
 from io import StringIO
 import sys
-reload(sys)
+sys.reload()
 sys.setdefaultencoding('UTF8')
 
 
@@ -60,8 +60,8 @@ class DataGenerator(Configurable):
         self.m_title_pool = np.array(None)
         if self.load_litle_pool and self.neg_sample:
             self._load_title_pool()
-        print "min_score_diff: ", self.min_score_diff
-        print "generator's vocabulary size: ", self.vocabulary_size
+        print("min_score_diff: ", self.min_score_diff)
+        print("generator's vocabulary size: ", self.vocabulary_size)
 
     def _load_title_pool(self):
         if self.title_in:
@@ -173,7 +173,7 @@ class DataGenerator(Configurable):
                     flag = False
                     break
             if not flag:
-                print line
+                print(line)
                 continue
             y = float(cols[3])
             if abs(y) < self.min_score_diff:
@@ -235,8 +235,8 @@ if __name__ == '__main__':
     from deeplearning4ir.utils import set_basic_log, load_py_config
     set_basic_log()
     if 4 != len(sys.argv):
-        print "I test generator"
-        print "3 para: config + click pair with int term + batch_size"
+        print("I test generator")
+        print("3 para: config + click pair with int term + batch_size")
         DataGenerator.class_print_help()
         sys.exit(-1)
     conf = load_py_config(sys.argv[1])
@@ -247,21 +247,21 @@ if __name__ == '__main__':
     X, Y = next(generator.pointwise_generate(pair_stream, batch_size, False))
     a = np.ones(1)
 
-    print "point wise Y:\n %s" % (np.array2string(Y))
-    print "\n\n"
-    print "q: \n %s" % (np.array2string(X[generator.q_name]))
-    print "\n\n"
-    print "d: \n %s" % (np.array2string(X[generator.d_name]))
-    print "\n\n"
+    print("point wise Y:\n %s" % (np.array2string(Y)))
+    print("\n\n")
+    print("q: \n %s" % (np.array2string(X[generator.q_name])))
+    print("\n\n")
+    print("d: \n %s" % (np.array2string(X[generator.d_name])))
+    print("\n\n")
     X, Y = next(generator.pairwise_generate(pair_stream, batch_size))
 
-    print "pair wise Y:\n %s" % (np.array2string(Y))
-    print "\n\n"
-    print "q: \n %s" % (np.array2string(X[generator.q_name]))
-    print "\n\n"
-    print "d: \n %s" % (np.array2string(X[generator.d_name]))
-    print "\n\n"
-    print "aux d: \n %s" % (np.array2string(X[generator.aux_d_name]))
+    print("pair wise Y:\n %s" % (np.array2string(Y)))
+    print("\n\n")
+    print("q: \n %s" % (np.array2string(X[generator.q_name])))
+    print("\n\n")
+    print("d: \n %s" % (np.array2string(X[generator.d_name])))
+    print("\n\n")
+    print("aux d: \n %s" % (np.array2string(X[generator.aux_d_name])))
 
 
 

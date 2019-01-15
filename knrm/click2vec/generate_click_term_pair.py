@@ -15,13 +15,13 @@ output:
 """
 
 import sys
-reload(sys)
+sys.reload
 sys.setdefaultencoding('UTF8')
 
 
 if len(sys.argv) != 3:
-    print "I generate click pair"
-    print "2 para: q-clicked url -title file + output"
+    print("I generate click pair")
+    print("2 para: q-clicked url -title file + output")
     sys.exit()
 
 
@@ -37,6 +37,6 @@ for line_cnt, line in enumerate(open(sys.argv[1])):
             print >> out, qt + '\t' + tt
             pair_cnt += 1
     if not line_cnt % 1000:
-        print "read [%d] clicks [%d] term pair generated" % (line_cnt, pair_cnt)
+        print("read [%d] clicks [%d] term pair generated" % (line_cnt, pair_cnt))
 
-print "finished with [%d] lines [%d] pairs" % (line_cnt + 1, pair_cnt + 1)
+print("finished with [%d] lines [%d] pairs" % (line_cnt + 1, pair_cnt + 1))
