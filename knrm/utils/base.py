@@ -19,7 +19,7 @@ import sys
 import logging
 import logging.handlers
 import json
-from deeplearning4ir.utils.base_conf import *
+# from deeplearning4ir.utils.base_conf import *
 import subprocess
 from traitlets.config import PyFileConfigLoader
 
@@ -91,7 +91,7 @@ def dump_svm_feature(l_svm_data, out_name):
     out = open(out_name, 'w')
     l_svm_data.sort(key=lambda item: int(item['qid'])) # sort
     for svm_data in l_svm_data:
-        print >>out, _dumps_svm_line(svm_data)
+        print(_dumps_svm_line(svm_data), out)
     out.close()
     logging.info('dump [%d] svm line to [%s]', len(l_svm_data), out_name)
     return
@@ -130,8 +130,7 @@ def load_trec_labels_dict(in_name):
 def load_trec_labels(in_name):
     h_qrel = load_trec_labels_dict(in_name)
     l_qrel = h_qrel.items()
-    l_qrel.sort(key=lambda item: int(item[0]))
-    return l_qrel
+    return sorted(l_qrel, key=lambda item: int(item[0]))
 
 
 def dump_trec_labels(l_qrel, out_name):
@@ -139,7 +138,7 @@ def dump_trec_labels(l_qrel, out_name):
     l_qrel.sort(key=lambda item: int(item[0]))
     for qid, h_doc_score in l_qrel:
         for docno, label in h_doc_score.items():
-            print >> out, qid + ' 0 ' + docno + ' ' + str(label)
+            print(qid + ' 0 ' + docno + ' ' + str(label), file=out)
     out.close()
     logging.debug('[%d] q\'s relevance dumped to [%s]', len(l_qrel), out_name)
     return
@@ -178,20 +177,14 @@ def dump_trec_ranking(ll_qid_ranked_doc, out_name, ranking_name='na'):
     for l_qid_ranking in ll_mid:
         qid, ranking = l_qid_ranking
         for p, (doc, score) in enumerate(ranking):
-            print >> out, '%s\tQ0\t%s\t%d\t%f # %s' % (
-                qid,
-                doc,
-                p + 1,
-                score,
-                ranking_name
-            )
+            print(out, '%s\tQ0\t%s\t%d\t%f # %s' % (qid, doc, p + 1, score, ranking_name), file=out)
     out.close()
     logging.info('trec ranking dumped to [%s]', out_name)
 
 
 def dump_trec_out_from_ranking_score(l_qid, l_docno, l_score, out_name, method_name='na'):
     l_data = zip(l_qid, zip(l_docno, l_score))
-    l_data.sort(key=lambda item: (int(item[0]), -item[1][1]))
+    l_data = sorted(l_data, key=lambda item: (int(item[0]), -item[1][1]))
 
     out = open(out_name, 'w')
     rank_p = 1
@@ -203,10 +196,7 @@ def dump_trec_out_from_ranking_score(l_qid, l_docno, l_score, out_name, method_n
         if qid != this_qid:
             rank_p = 1
             this_qid = qid
-        print >> out, '%s Q0 %s %d %f # %s' %(
-            qid, docno, rank_p, score,
-            method_name,
-        )
+        print('%s Q0 %s %d %f # %s' % (qid, docno, rank_p, score, method_name), file=out)
         rank_p += 1
 
     out.close()
@@ -283,7 +273,7 @@ def text_to_lm(text):
     return h_t
 
 
-def eval_trec(in_name, out_name, qrel_in=QREL_PATH):
+"""def eval_trec(in_name, out_name, qrel_in=QREL_PATH):
     l_cmd = ['perl', GDEVAL_PATH, qrel_in, in_name]
     res_str = subprocess.check_output(l_cmd)
     print >> open(out_name, 'w'), res_str.strip()
@@ -292,7 +282,8 @@ def eval_trec(in_name, out_name, qrel_in=QREL_PATH):
     ndcg, err = mean_line.split(',')[-2:]
     ndcg = float(ndcg)
     err = float(err)
-    return ndcg, err
+    return ndcg, err"""
+
 
 def load_gdeval_res(in_name):
     return seg_gdeval_out(open(in_name).read())

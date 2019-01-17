@@ -11,7 +11,7 @@ from traitlets.config import Configurable
 from traitlets import (
     Int,
     Float,
-    Bool,
+    # Bool,
     Unicode,
 )
 import sys
@@ -21,8 +21,8 @@ from traitlets.config.loader import PyFileConfigLoader
 from knrm.model import BaseNN
 
 
-sys.reload()
-sys.setdefaultencoding('UTF8')
+# sys.reload()
+# sys.setdefaultencoding('UTF8')
 
 
 class Knrm(BaseNN):
@@ -95,13 +95,13 @@ class Knrm(BaseNN):
         tmp = tf.transpose(normalized_d_embed, perm=[0, 2, 1])
 
         # similarity matrix [n_batch, qlen, dlen]
-        sim = tf.batch_matmul(normalized_q_embed, tmp, name='similarity_matrix')
+        sim = tf.matmul(normalized_q_embed, tmp, name='similarity_matrix')
 
         # compute gaussian kernel
         rs_sim = tf.reshape(sim, [self.batch_size, self.max_q_len, self.max_d_len, 1])
 
         # compute Gaussian scores of each kernel
-        tmp = tf.exp(-tf.square(tf.sub(rs_sim, mu)) / (tf.mul(tf.square(sigma), 2)))
+        tmp = tf.exp(-tf.square(tf.subtract(rs_sim, mu)) / (tf.subtract(tf.square(sigma), 2)))
 
         # mask those non-existing words.
         tmp = tmp * mask
@@ -114,10 +114,10 @@ class Knrm(BaseNN):
 
         # aggregated query terms
         # q_weights = [1, 1, 0, 0...]. Works as a query word mask.
-        # Support query-term weigting if set to continous values (e.g. IDF).
+        # Support query-term weigting if set to continuous values (e.g. IDF).
         aggregated_kde = tf.reduce_sum(kde * q_weights, [1])  # [batch, n_bins]
 
-        feats.append(aggregated_kde) # [[batch, nbins]]
+        feats.append(aggregated_kde)  # [[batch, nbins]]
         feats_tmp = tf.concat(1, feats)  # [batch, n_bins]
         print("batch feature shape:", feats_tmp.get_shape())
 
@@ -173,7 +173,8 @@ class Knrm(BaseNN):
         input_train_mask_pos = tf.placeholder(tf.float32, shape=[self.batch_size, self.max_q_len, self.max_d_len])
         input_train_mask_neg = tf.placeholder(tf.float32, shape=[self.batch_size, self.max_q_len, self.max_d_len])
 
-        # reshape place holders
+        # reshape place holders TODO
+        # Issue #3 - The line below whe mu is instantiated is only for debug
         mu = tf.reshape(input_mu, shape=[1, 1, self.n_bins])
         sigma = tf.reshape(input_sigma, shape=[1, 1, self.n_bins])
         rs_train_mask_pos = tf.reshape(input_train_mask_pos, [self.batch_size, self.max_q_len, self.max_d_len, 1])
@@ -238,7 +239,8 @@ class Knrm(BaseNN):
                     if (step + 1) % self.eval_frequency == 0:
                         val_l = 0
                         val_pair_stream = open(val_pair_file_path)
-                        for BATCH in self.val_data_generator.pairwise_reader(val_pair_stream, self.batch_size, with_idf=True):
+                        for BATCH in self.val_data_generator.pairwise_reader(val_pair_stream, self.batch_size,
+                                                                             with_idf=True):
                             X_val, Y_val = BATCH
                             M_pos = self.gen_mask(X_val[u'q'], X_val[u'd'])
                             M_neg = self.gen_mask(X_val[u'q'], X_val[u'd_aux'])
@@ -262,7 +264,7 @@ class Knrm(BaseNN):
                         print('Step %d (epoch %.2f), %.1f ms per step' % (step,
                                                                           float(step) * self.batch_size / (train_size * self.neg_sample),
                                                                           1000 * elapsed_time / self.eval_frequency))
-                        print('validation loss: %.3f' % (val_l))
+                        print('validation loss: %.3f' % val_l)
                         sys.stdout.flush()
 
                     # save data
@@ -319,15 +321,16 @@ class Knrm(BaseNN):
                 if True:
                     saver.restore(sess, p)
                     print("data loaded!")
-                else:
-                    print("no data found")
-                    exit(-1)
+                # else:
+                    # print("no data found")
+                    # exit(-1)
             else:
                 tf.initialize_all_variables().run()  
 
             # Loop through training steps.
             for b in range(int(np.ceil(float(test_size)/self.batch_size))):
-                X, Y = next(self.test_data_generator.pointwise_generate(test_point_stream, self.batch_size, with_idf=True, with_label=False))
+                X, Y = next(self.test_data_generator.pointwise_generate(test_point_stream, self.batch_size,
+                                                                        with_idf=True, with_label=False))
                 M = self.gen_mask(X[u'q'], X[u'd'])
                 test_feed_dict = {test_inputs_q: self.re_pad(X[u'q'], self.batch_size),
                                   test_inputs_d: self.re_pad(X[u'd'], self.batch_size),

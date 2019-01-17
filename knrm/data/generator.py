@@ -19,8 +19,6 @@ include:
                 h['d_aux'] = array of the second d (batch size * max title len)
 
     all terms are int ids
-
-
 """
 
 
@@ -37,8 +35,8 @@ from numpy import genfromtxt
 import logging
 from io import StringIO
 import sys
-sys.reload()
-sys.setdefaultencoding('UTF8')
+# sys.reload()
+# sys.setdefaultencoding('UTF8')
 
 
 class DataGenerator(Configurable):
@@ -57,6 +55,7 @@ class DataGenerator(Configurable):
 
     def __init__(self, **kwargs):
         super(DataGenerator, self).__init__(**kwargs)
+        #TODO check this
         self.m_title_pool = np.array(None)
         if self.load_litle_pool and self.neg_sample:
             self._load_title_pool()
@@ -90,6 +89,8 @@ class DataGenerator(Configurable):
             doc = np.array([int(t) for t in cols[1].split(',')])  #np.loadtxt(StringIO(unicode(cols[1])), delimiter=',',  dtype=int,)
             
             if with_idf:
+                idf = np.ones(len(q))
+            else:
                 idf = np.array([int(t) for t in cols[2].split(',')])
             y = 0
             if with_label:
@@ -231,8 +232,9 @@ class DataGenerator(Configurable):
             yield X, Y
         logging.info('pair wise reader to an end')
 
+
 if __name__ == '__main__':
-    from deeplearning4ir.utils import set_basic_log, load_py_config
+    from knrm.utils import set_basic_log, load_py_config
     set_basic_log()
     if 4 != len(sys.argv):
         print("I test generator")
@@ -262,16 +264,3 @@ if __name__ == '__main__':
     print("d: \n %s" % (np.array2string(X[generator.d_name])))
     print("\n\n")
     print("aux d: \n %s" % (np.array2string(X[generator.aux_d_name])))
-
-
-
-
-
-
-
-
-
-
-
-
-

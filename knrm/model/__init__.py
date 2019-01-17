@@ -8,4 +8,4 @@
 # forth in the LICENSE file included with this software, and also available at
 # https://github.com/AdeDZY/K-NRM/blob/master/LICENSE
 
-from model_base import *
+from .model_base import *

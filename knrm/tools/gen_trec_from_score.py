@@ -5,9 +5,9 @@
 # https://github.com/AdeDZY/K-NRM/blob/master/LICENSE
 
 import argparse
-import sys
-sys.reload()
-sys.setdefaultencoding('UTF8')
+# import sys
+# sys.reload()
+# sys.setdefaultencoding('UTF8')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

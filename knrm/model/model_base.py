@@ -11,13 +11,13 @@ from traitlets.config import Configurable
 from traitlets import (
     Int,
     Float,
-    Bool,
+    # Bool,
 )
 
-import sys
+# import sys
 
-sys.reload()
-sys.setdefaultencoding('UTF8')
+# sys.reload()
+# sys.setdefaultencoding('UTF8')
 
 
 class BaseNN(Configurable):
@@ -44,6 +44,7 @@ class BaseNN(Configurable):
         """
         get the mu for each guassian kernel. Mu is the middle of each bin
         :param n_kernels: number of kernels (including exact match). first one is exact match
+        :param use_exact:
         :return: l_mu, a list of mu.
         """
         if use_exact:
@@ -62,7 +63,7 @@ class BaseNN(Configurable):
     @staticmethod
     def kernel_sigmas(n_kernels, lamb, use_exact):
         """
-        get sigmas for each guassian kernel.
+        get sigmas for each gaussian kernel.
         :param n_kernels: number of kernels (including exactmath.)
         :param lamb:
         :param use_exact:
@@ -94,9 +95,9 @@ class BaseNN(Configurable):
     def gen_mask(self, Q, D, use_exact=True):
         """
         Generate mask for the batch. Mask padding and OOV terms.
-        Exact matches is alos masked if use_exat == False.
+        Exact matches is also masked if use_exact == False.
         :param Q: a batch of queries, [batch_size, max_len_q]
-        :param D: a bacth of documents, [batch_size, max_len_d]
+        :param D: a batch of documents, [batch_size, max_len_d]
         :param use_exact: mask exact matches if set False.
         :return: a mask of shape [batch_size, max_len_q, max_len_d].
         """

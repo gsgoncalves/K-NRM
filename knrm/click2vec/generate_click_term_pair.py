@@ -15,8 +15,8 @@ output:
 """
 
 import sys
-sys.reload
-sys.setdefaultencoding('UTF8')
+# sys.reload()
+# sys.setdefaultencoding('UTF8')
 
 
 if len(sys.argv) != 3:
@@ -34,7 +34,7 @@ for line_cnt, line in enumerate(open(sys.argv[1])):
     # url, q, t = line.strip().split('\t')
     for qt in q.split():
         for tt in t.split():
-            print >> out, qt + '\t' + tt
+            print(qt + '\t' + tt, file=out)
             pair_cnt += 1
     if not line_cnt % 1000:
         print("read [%d] clicks [%d] term pair generated" % (line_cnt, pair_cnt))
